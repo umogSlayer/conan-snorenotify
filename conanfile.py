@@ -8,6 +8,7 @@ class SnoreNotifyConan(ConanFile):
     url = 'https://github.com/umogSlayer/conan-snorenotify'
     settings = 'os', 'compiler', 'build_type', 'arch'
     generators = 'cmake_paths'
+    short_paths = True
     requires = [
         'qt/5.15.2@bincrafters/stable',
     ]
