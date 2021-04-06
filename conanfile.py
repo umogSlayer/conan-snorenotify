@@ -14,7 +14,11 @@ class SnoreNotifyConan(ConanFile):
     build_requires = [
         'extra-cmake-modules/5.80.0',
     ]
+    options = {
+        'fPIC': [True, False],
+    }
     default_options = {
+        'fPIC': True,
         'qt:qtquickcontrols2': 'True',
         'qt:qtdeclarative': 'True',
         'qt:qttranslations': 'True',
@@ -28,14 +32,12 @@ class SnoreNotifyConan(ConanFile):
         sources_git = tools.Git(folder='snorenotify')
         sources_git.clone('https://github.com/KDE/snorenotify.git')
 
-    def _make_program(self):
-        return "make"
-
     def build(self):
         tools.patch(base_path="snorenotify", patch_file="patches/snore_static_plugins.h.in.patch")
         cmake = CMake(self)
         cmake_defs = {
             'CMAKE_PROJECT_SnoreNotify_INCLUDE': '../conan_paths.cmake',
+            'CMAKE_POSITION_INDEPENDENT_CODE': '%s' % self.options.fPIC,
             'SNORE_STATIC': 'ON',
             'BUILD_SHARED_LIBS': 'OFF',
         }
