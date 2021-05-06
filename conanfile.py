@@ -35,6 +35,7 @@ class SnoreNotifyConan(ConanFile):
 
     def build(self):
         tools.patch(base_path="snorenotify", patch_file="patches/snore_static_plugins.h.in.patch")
+        tools.patch(base_path="snorenotify", patch_file="patches/plugincontainer.cpp.macos.patch")
         cmake = CMake(self)
         cmake_defs = {
             'CMAKE_PROJECT_SnoreNotify_INCLUDE': '../conan_paths.cmake',

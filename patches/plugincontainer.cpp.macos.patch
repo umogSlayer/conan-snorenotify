@@ -1,0 +1,21 @@
+diff --git a/src/libsnore/plugins/plugincontainer.cpp b/src/libsnore/plugins/plugincontainer.cpp
+index a0f9955..ae404c4 100644
+--- a/src/libsnore/plugins/plugincontainer.cpp
++++ b/src/libsnore/plugins/plugincontainer.cpp
+@@ -152,6 +152,7 @@ const QDir &PluginContainer::pluginDir()
+     if (!isLoaded) {
+         isLoaded = true;
+         QString appDir = qApp->applicationDirPath();
++        QStringList list;
+ #ifdef Q_OS_MAC
+         if (appDir == QLatin1String("MacOS")) {
+             list << appDir;
+@@ -164,7 +165,7 @@ const QDir &PluginContainer::pluginDir()
+         }
+ #endif
+         const auto suffix = QStringLiteral("/libsnore" SNORE_SUFFIX);
+-        QStringList list { appDir };
++        list << appDir;
+         for (const QString &s : qApp->libraryPaths()) {
+          list << s + suffix;
+         }
