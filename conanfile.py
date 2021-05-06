@@ -42,6 +42,7 @@ class SnoreNotifyConan(ConanFile):
             'CMAKE_POSITION_INDEPENDENT_CODE': '%s' % self.options.fPIC,
             'SNORE_STATIC': 'ON',
             'BUILD_SHARED_LIBS': 'OFF',
+            'KDE_INSTALL_BUNDLEDIR': 'Applications/KDE',
         }
         cmake.configure(defs=cmake_defs, source_dir='snorenotify')
         cmake.build()
