@@ -1,6 +1,8 @@
 from conans import ConanFile, CMake
 from conans import tools
-import os, shutil
+import os
+import shutil
+import glob
 
 class SnoreNotifyConan(ConanFile):
     name = 'snorenotify'
@@ -17,9 +19,11 @@ class SnoreNotifyConan(ConanFile):
     ]
     options = {
         'fPIC': [True, False],
+        'shared': [True, False],
     }
     default_options = {
         'fPIC': True,
+        'shared': False,
         'qt:qtquickcontrols2': 'True',
         'qt:qtdeclarative': 'True',
         'qt:qttranslations': 'True',
@@ -39,9 +43,9 @@ class SnoreNotifyConan(ConanFile):
         cmake = CMake(self)
         cmake_defs = {
             'CMAKE_PROJECT_SnoreNotify_INCLUDE': '../conan_paths.cmake',
-            'CMAKE_POSITION_INDEPENDENT_CODE': '%s' % self.options.fPIC,
-            'SNORE_STATIC': 'ON',
-            'BUILD_SHARED_LIBS': 'OFF',
+            'CMAKE_POSITION_INDEPENDENT_CODE': 'ON' if self.options.fPIC else 'OFF',
+            'SNORE_STATIC': 'OFF' if self.options.shared else 'ON',
+            'BUILD_SHARED_LIBS': 'ON' if self.options.shared else 'OFF',
             'KDE_INSTALL_BUNDLEDIR': 'Applications/KDE',
         }
         cmake.configure(defs=cmake_defs, source_dir='snorenotify')
@@ -50,3 +54,17 @@ class SnoreNotifyConan(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
+        self.copy('*.a', dst='lib', keep_path=False)
+        self.copy('*.lib', dst='lib', keep_path=False)
+        tools.remove_files_by_mask(os.path.join(self.package_folder, "lib"), "*.cmake")
+
+    def package_info(self):
+        self.cpp_info.libs = ['snore-qt5', 'snoresettings-qt5']
+        if not self.options.shared:
+            for lib_file in glob.glob(os.path.join(self.package_folder, "lib", "liblibsnore_*_*.a")):
+                lib = str(os.path.basename(lib_file)[3:-2])
+                self.cpp_info.libs.append(lib)
+            for lib_file in glob.glob(os.path.join(self.package_folder, "lib", "libsnore_*_*.lib")):
+                lib = str(os.path.basename(lib_file)[:-4])
+                self.cpp_info.libs.append(lib)
+            self.cpp_info.defines.append('SNORE_STATIC')
